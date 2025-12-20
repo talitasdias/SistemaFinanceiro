@@ -1,4 +1,8 @@
 using BackEnd.Data;
+using BackEnd.Repositories;
+using BackEnd.Repositories.Interfaces;
+using BackEnd.Services;
+using BackEnd.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +18,9 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IPessoaRepository, PessoaRepository>();
+builder.Services.AddScoped<IPessoaService, PessoaService>();
 
 var app = builder.Build();
 
