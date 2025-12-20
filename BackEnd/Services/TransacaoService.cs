@@ -1,3 +1,4 @@
+using BackEnd.Common.Pagination;
 using BackEnd.DTOs.Transacoes;
 using BackEnd.Enums;
 using BackEnd.Models;
@@ -68,11 +69,17 @@ public class TransacaoService : ITransacaoService
         };
     }
 
-    public async Task<List<TransacaoResponseDto>> GetAllAsync()
+    public async Task<PagedList<TransacaoResponseDto>> GetAllAsync(PaginationParams pagination)
     {
-        var transacoes = await _transacaoRepository.GetAllAsync();
+        var query = _transacaoRepository.GetAllAsync().OrderBy(t => t.Id);
 
-        return transacoes.Select(t => new TransacaoResponseDto
+        var pagedTransacao = await PagedList<Transacao>.CreateAsync(
+            query,
+            pagination.PageNumber,
+            pagination.PageSize
+        );
+
+        return pagedTransacao.Map(t => new TransacaoResponseDto
         {
             Id = t.Id,
             Descricao = t.Descricao,
@@ -82,6 +89,6 @@ public class TransacaoService : ITransacaoService
             PessoaNome = t.Pessoa.Nome,
             CategoriaId = t.CategoriaId,
             CategoriaDescricao = t.Categoria.Descricao
-        }).ToList();
+        });
     }
 }

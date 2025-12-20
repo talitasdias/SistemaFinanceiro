@@ -1,3 +1,5 @@
+using System.Text.Json;
+using BackEnd.Common.Pagination;
 using BackEnd.DTOs.Categorias;
 using BackEnd.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -11,10 +13,21 @@ public class CategoriasController(ICategoriaService service) : ControllerBase
     private readonly ICategoriaService _service = service;
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] PaginationParams pagination)
     {
-        var categorias = await _service.GetAllAsync();
-        return Ok(categorias);
+        var result = await _service.GetAllAsync(pagination);
+
+        Response.Headers["X-Pagination"] =  JsonSerializer.Serialize(new
+        {
+            result.CurrentPage,
+            result.PageSize,
+            result.TotalCount,
+            result.TotalPages,
+            result.HasNext,
+            result.HasPrevious
+        });
+
+        return Ok(result);
     }
 
     [HttpPost]

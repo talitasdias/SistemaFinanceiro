@@ -8,9 +8,9 @@ namespace BackEnd.Repositories;
 public class PessoaRepository(AppDbContext context) : IPessoaRepository
 {
     private readonly AppDbContext _context = context;
-    public async Task<List<Pessoa>> GetAllAsync()
+    public IQueryable<Pessoa> GetAllAsync()
     {
-        return await _context.Pessoas.AsNoTracking().ToListAsync();
+        return _context.Pessoas.AsNoTracking();
     }
 
      public async Task<Pessoa?> GetByIdAsync(int id)

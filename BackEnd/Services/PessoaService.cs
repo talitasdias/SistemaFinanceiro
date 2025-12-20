@@ -1,3 +1,4 @@
+using BackEnd.Common.Pagination;
 using BackEnd.DTOs.Pessoas;
 using BackEnd.Models;
 using BackEnd.Repositories.Interfaces;
@@ -8,16 +9,22 @@ namespace BackEnd.Services;
 public class PessoaService(IPessoaRepository repository) : IPessoaService
 {
     private readonly IPessoaRepository _repository = repository;
-    public async Task<List<PessoaResponseDto>> GetAllAsync()
+    public async Task<PagedList<PessoaResponseDto>> GetAllAsync(PaginationParams pagination)
     {
-        var pessoas = await _repository.GetAllAsync();
+        var query = _repository.GetAllAsync().OrderBy(p => p.Nome);
 
-        return pessoas.Select(p => new PessoaResponseDto
+        var pagedPessoas = await PagedList<Pessoa>.CreateAsync(
+            query,
+            pagination.PageNumber,
+            pagination.PageSize
+        );
+
+        return pagedPessoas.Map(p => new PessoaResponseDto
         {
             Id = p.Id,
             Nome = p.Nome,
             Idade = p.Idade
-        }).ToList();
+        });
     }
 
     public async Task<PessoaResponseDto> CreateAsync(PessoaCreateDto dto)

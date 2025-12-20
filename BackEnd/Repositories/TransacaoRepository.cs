@@ -15,11 +15,10 @@ public class TransacaoRepository(AppDbContext context) : ITransacaoRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<List<Transacao>> GetAllAsync()
+    public IQueryable<Transacao> GetAllAsync()
     {
-        return await _context.Transacoes
+        return _context.Transacoes
             .Include(t => t.Categoria)
-            .Include(t => t.Pessoa)
-            .ToListAsync();
+            .Include(t => t.Pessoa);
     }
 }

@@ -9,9 +9,9 @@ public class CategoriaRepository(AppDbContext context) : ICategoriaRepository
 {
     private readonly AppDbContext _context = context;
 
-    public async Task<List<Categoria>> GetAllAsync()
+    public IQueryable<Categoria> GetAllAsync()
     {
-        return await _context.Categorias.AsNoTracking().ToListAsync();
+        return _context.Categorias.AsNoTracking();
     }
 
     public async Task<Categoria?> GetByIdAsync(int id)

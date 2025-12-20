@@ -46,11 +46,18 @@ public class RelatorioService(AppDbContext context) : IRelatorioService
                 CategoriaDescricao = c.Descricao,
                 Finalidade = c.Finalidade.ToString(),
 
-                Total = c.Transacoes.Sum(t => (decimal?)t.Valor) ?? 0
+                TotalReceitas = c.Transacoes
+                    .Where(t => t.Tipo == TipoTransacao.Receita)
+                    .Sum(t => (decimal?)t.Valor) ?? 0,
+
+                TotalDespesas = c.Transacoes
+                    .Where(t => t.Tipo == TipoTransacao.Despesa)
+                    .Sum(t => (decimal?)t.Valor) ?? 0
             })
             .ToListAsync();
 
         return relatorio;
     }
+
 }
 

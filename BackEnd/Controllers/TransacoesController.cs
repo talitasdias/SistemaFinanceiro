@@ -1,3 +1,5 @@
+using System.Text.Json;
+using BackEnd.Common.Pagination;
 using BackEnd.DTOs.Transacoes;
 using BackEnd.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -23,8 +25,20 @@ public class TransacoesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromBody] PaginationParams pagination)
     {
-        return Ok(await _service.GetAllAsync());
+        var result = await _service.GetAllAsync(pagination);
+
+        Response.Headers["X-Pagination"] =  JsonSerializer.Serialize(new
+        {
+            result.CurrentPage,
+            result.PageSize,
+            result.TotalCount,
+            result.TotalPages,
+            result.HasNext,
+            result.HasPrevious
+        });
+
+        return Ok(result);
     }
 }

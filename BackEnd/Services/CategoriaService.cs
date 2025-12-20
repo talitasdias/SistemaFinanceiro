@@ -1,3 +1,4 @@
+using BackEnd.Common.Pagination;
 using BackEnd.DTOs.Categorias;
 using BackEnd.Models;
 using BackEnd.Repositories.Interfaces;
@@ -9,16 +10,22 @@ public class CategoriaService(ICategoriaRepository repository) : ICategoriaServi
 {
     private readonly ICategoriaRepository _repository = repository;
 
-    public async Task<List<CategoriaResponseDto>> GetAllAsync()
+    public async Task<PagedList<CategoriaResponseDto>> GetAllAsync(PaginationParams pagination)
     {
-        var categorias = await _repository.GetAllAsync();
+        var query = _repository.GetAllAsync().OrderBy(p => p.Descricao);
 
-        return categorias.Select(c => new CategoriaResponseDto
+        var pagedCategorias = await PagedList<Categoria>.CreateAsync(
+            query,
+            pagination.PageNumber,
+            pagination.PageSize
+        );
+
+        return pagedCategorias.Map(c => new CategoriaResponseDto
         {
             Id = c.Id,
             Descricao = c.Descricao,
             Finalidade = c.Finalidade
-        }).ToList();
+        });
     }
 
     public async Task<CategoriaResponseDto> CreateAsync(CategoriaCreateDto dto)
