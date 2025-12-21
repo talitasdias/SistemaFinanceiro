@@ -1,14 +1,28 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-WORKDIR /app
-EXPOSE 8080
-
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY . .
-RUN dotnet restore
-RUN dotnet publish -c Release -o /app/publish
 
-FROM base AS final
+# Copia a solução e o csproj
+COPY BackEnd.sln ./
+COPY SistemaFinanceiroApi.csproj ./
+
+# Restaura as dependências
+RUN dotnet restore SistemaFinanceiroApi.csproj
+
+# Copia o restante do projeto
+COPY . .
+
+# Muda para o diretório correto onde o .csproj está
+WORKDIR /src
+
+# Publica o projeto
+RUN dotnet publish SistemaFinanceiroApi.csproj -c Release -o /app/publish
+
+# ============================
+# Runtime
+# ============================
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/publish .
-ENTRYPOINT ["dotnet", "BackEnd.dll"]
+
+EXPOSE 8080
+ENTRYPOINT ["dotnet", "SistemaFinanceiroApi.dll"]

@@ -15,7 +15,9 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   api:
-    build: .
+    build:
+      context: ./BackEnd
+      dockerfile: Dockerfile
     container_name: sistema_financeiro_api
     depends_on:
       - postgres
@@ -24,6 +26,17 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=sistema_financeiro;Username=postgres;Password=postgres
+    restart: always
+
+  frontend:
+    build:
+      context: ./FrontEnd
+      dockerfile: Dockerfile
+    container_name: sistema_financeiro_frontend
+    depends_on:
+      - api
+    ports:
+      - "3000:80"
     restart: always
 
 volumes:
