@@ -25,7 +25,7 @@ public class TransacoesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromBody] PaginationParams pagination)
+    public async Task<IActionResult> GetAll([FromQuery] PaginationParams pagination)
     {
         var result = await _service.GetAllAsync(pagination);
 
