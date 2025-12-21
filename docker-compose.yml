@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: sistema_financeiro_db
+    restart: always
+    environment:
+      POSTGRES_DB: sistema_financeiro
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build: .
+    container_name: sistema_financeiro_api
+    depends_on:
+      - postgres
+    ports:
+      - "5070:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=sistema_financeiro;Username=postgres;Password=postgres
+    restart: always
+
+volumes:
+  postgres_data:
